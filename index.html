@@ -436,7 +436,7 @@
   IMPORTANT:
   Paste your latest Google Apps Script /exec URL below.
 */
-const API_URL = "PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE";
+const API_URL = "https://script.google.com/macros/s/AKfycbyHYD32ErIjfodsi94cFSuYyIDBviRtEmCA1dXdItvLOIj-gGzsIpAp7Cm32avxmEha/exec";
 
 let dashboardData = {};
 let membershipData = [];
@@ -450,56 +450,57 @@ function showLoading(v) {
    JSONP API REQUEST
 ------------------------------------------------- */
 
-function jsonpRequest(action, payload = {}) {
+function apiCall(action, payload = {}) {
   showLoading(true);
 
   return new Promise((resolve, reject) => {
-    const callbackName = "jsonp_cb_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
+    google.script.run
+      .withSuccessHandler(function(res) {
+        showLoading(false);
+        if (res && res.error) reject(new Error(res.error));
+        else resolve(res);
+      })
+      .withFailureHandler(function(err) {
+        showLoading(false);
+        reject(new Error(err.message || err));
+      })
+      .handleActionForWebApp(action, payload);
+  });
+}
 
-    window[callbackName] = function(data) {
-      try {
-        delete window[callbackName];
-        document.body.removeChild(script);
-      } catch (e) {}
+function apiCall(action, payload = {}) {
+  showLoading(true);
 
-      showLoading(false);
-
-      if (data && data.error) {
-        reject(new Error(data.error));
-      } else {
-        resolve(data);
-      }
-    };
-
-    const params = new URLSearchParams({
-      action: action,
-      callback: callbackName,
-      ...payload
-    });
-
-    const script = document.createElement("script");
-    script.src = `${API_URL}?${params.toString()}`;
-
-    script.onerror = function() {
-      try {
-        delete window[callbackName];
-        document.body.removeChild(script);
-      } catch (e) {}
-
-      showLoading(false);
-      reject(new Error("Failed to connect Apps Script"));
-    };
-
-    document.body.appendChild(script);
+  return new Promise((resolve, reject) => {
+    google.script.run
+      .withSuccessHandler(function(res) {
+        showLoading(false);
+        if (res && res.error) reject(new Error(res.error));
+        else resolve(res);
+      })
+      .withFailureHandler(function(err) {
+        showLoading(false);
+        reject(new Error(err.message || err));
+      })
+      .handleActionForWebApp(action, payload);
   });
 }
 
 async function apiGet(action, payload = {}) {
-  return jsonpRequest(action, payload);
+  return apiCall(action, payload);
 }
 
 async function apiPost(action, payload = {}) {
-  return jsonpRequest(action, payload);
+  return apiCall(action, payload);
+}
+
+
+async function apiGet(action, payload = {}) {
+  return apiCall(action, payload);
+}
+
+async function apiPost(action, payload = {}) {
+  return ap(action, payload);
 }
 
 /* -------------------------------------------------
