@@ -37,6 +37,7 @@
   <a id="navlink-pravas" class="nav" onclick="showSection('pravas')">🧳 Pravas</a>
   <a id="navlink-forms" class="nav" onclick="showSection('forms')">📝 Active Forms</a>
   <a id="navlink-karyakarini" class="nav" onclick="showSection('karyakarini')">🏛️ Prant Karyakarini</a>
+  <a id="navlink-jnk" class="nav" onclick="showSection('jnk')">🏘️ Jilha/Nagar Karyakarini</a>
   <a id="navlink-logs" class="nav" onclick="showSection('logs')">🗂️ Logs</a>
 </div>
 
@@ -162,6 +163,49 @@
       </tr>
     </thead>
     <tbody id="karyakariniTable"></tbody>
+  </table>
+</div>
+
+<div id="jnk" class="section">
+  <h1>जिल्हा आणि नगर कार्यकारिणी</h1>
+
+  <div class="form-box">
+    <label style="font-size:13px;color:#64748b;">Prant:</label>
+    <select id="jnkPrant" onchange="onPrantChange()">
+      <option value="All">All Prants</option>
+      <option>Konkan Prant</option>
+      <option>Pashchim Maharashtra Prant</option>
+      <option>Deogiri Prant</option>
+      <option>Vidharbh Prant</option>
+      <option>Gujrat Prant</option>
+    </select>
+
+    <label style="font-size:13px;color:#64748b;">Jilha:</label>
+    <select id="jnkJilha" onchange="onJilhaChange()">
+      <option value="All">All Jilha</option>
+    </select>
+
+    <label style="font-size:13px;color:#64748b;">Nagar:</label>
+    <select id="jnkNagar" onchange="loadJilhaNagarKaryakarini()">
+      <option value="All">All Nagar</option>
+    </select>
+  </div>
+
+  <input type="text" id="jnkSearchInput" placeholder="Search naav, jababdari, mahavidyalay..." onkeyup="searchJnk()">
+
+  <table>
+    <thead>
+      <tr>
+        <th>Jilha</th>
+        <th>Nagar</th>
+        <th>Jababdari</th>
+        <th>Naav</th>
+        <th>Mahavidyalay</th>
+        <th>Phone</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody id="jnkTable"></tbody>
   </table>
 </div>
 

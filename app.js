@@ -87,6 +87,10 @@ function showSection(id) {
   if (id === "karyakarini" && karyakariniData.length === 0) {
     loadKaryakarini();
   }
+
+  if (id === "jnk" && jnkData.length === 0) {
+  onPrantChange(); // populates Jilha list + loads table for "All"
+  }
 }
 
 /* ---------------- LOAD DASHBOARD ---------------- */
@@ -305,6 +309,79 @@ function searchKaryakarini() {
     Object.values(row).join(" ").toLowerCase().includes(keyword)
   );
   renderKaryakarini(filtered);
+}
+
+let jnkData = [];
+
+async function onPrantChange() {
+  const prant = document.getElementById("jnkPrant").value;
+
+  // Reset & repopulate Jilha dropdown
+  const jilhaSelect = document.getElementById("jnkJilha");
+  jilhaSelect.innerHTML = `<option value="All">All Jilha</option>`;
+
+  const jilhas = await apiGet("getJilhaList", { prant });
+  jilhas.forEach(j => {
+    jilhaSelect.innerHTML += `<option>${esc(j)}</option>`;
+  });
+
+  // Reset Nagar dropdown too
+  document.getElementById("jnkNagar").innerHTML = `<option value="All">All Nagar</option>`;
+
+  loadJilhaNagarKaryakarini();
+}
+
+async function onJilhaChange() {
+  const prant = document.getElementById("jnkPrant").value;
+  const jilha = document.getElementById("jnkJilha").value;
+
+  const nagarSelect = document.getElementById("jnkNagar");
+  nagarSelect.innerHTML = `<option value="All">All Nagar</option>`;
+
+  const nagars = await apiGet("getNagarList", { prant, jilha });
+  nagars.forEach(n => {
+    nagarSelect.innerHTML += `<option>${esc(n)}</option>`;
+  });
+
+  loadJilhaNagarKaryakarini();
+}
+
+async function loadJilhaNagarKaryakarini() {
+  const prant = document.getElementById("jnkPrant").value;
+  const jilha = document.getElementById("jnkJilha").value;
+  const nagar = document.getElementById("jnkNagar").value;
+
+  try {
+    const data = await apiGet("getJilhaNagarKaryakarini", { prant, jilha, nagar });
+    jnkData = data;
+    renderJnk(jnkData);
+  } catch (err) {
+    alert("Failed to load list: " + err.message);
+  }
+}
+
+function renderJnk(data) {
+  let html = "";
+  data.forEach(r => {
+    html += `<tr>
+      <td>${esc(r.Jilha)}</td>
+      <td>${esc(r.Nagar)}</td>
+      <td>${esc(r.Jababdari)}</td>
+      <td>${esc(r.Naav)}</td>
+      <td>${esc(r.Mahavidyalay)}</td>
+      <td>${esc(r.Phone)}</td>
+      <td>${esc(r.Email)}</td>
+    </tr>`;
+  });
+  document.getElementById("jnkTable").innerHTML = html;
+}
+
+function searchJnk() {
+  const keyword = document.getElementById("jnkSearchInput").value.toLowerCase();
+  const filtered = jnkData.filter(row =>
+    Object.values(row).join(" ").toLowerCase().includes(keyword)
+  );
+  renderJnk(filtered);
 }
 
 initLogin();
