@@ -83,6 +83,10 @@ function showSection(id) {
 
   document.querySelectorAll(".nav").forEach(a => a.classList.remove("active-link"));
   document.getElementById("navlink-" + id).classList.add("active-link");
+
+  if (id === "karyakarini" && karyakariniData.length === 0) {
+    loadKaryakarini();
+  }
 }
 
 /* ---------------- LOAD DASHBOARD ---------------- */
@@ -260,6 +264,47 @@ async function saveMembership() {
   } catch (err) {
     alert("ERROR: " + err.message);
   }
+}
+
+let karyakariniData = [];
+
+async function loadKaryakarini() {
+  const prant = document.getElementById("kPrantFilter").value;
+
+  try {
+    const data = await apiGet("getKaryakarini", { prant });
+    karyakariniData = data;
+    renderKaryakarini(karyakariniData);
+  } catch (err) {
+    alert("Failed to load Karyakarini list: " + err.message);
+  }
+}
+
+function renderKaryakarini(data) {
+  let html = "";
+
+  data.forEach(r => {
+    html += `<tr>
+      <td>${esc(r.Jilha)}</td>
+      <td>${esc(r.Naav)}</td>
+      <td>${esc(r.Shakha)}</td>
+      <td>${esc(r.Sampark)}</td>
+      <td>${esc(r.Jababdari)}</td>
+      <td>${esc(r.Shikshan)}</td>
+      <td>${esc(r.SamparkVarsh)}</td>
+      <td>${esc(r.Email)}</td>
+    </tr>`;
+  });
+
+  document.getElementById("karyakariniTable").innerHTML = html;
+}
+
+function searchKaryakarini() {
+  const keyword = document.getElementById("kSearchInput").value.toLowerCase();
+  const filtered = karyakariniData.filter(row =>
+    Object.values(row).join(" ").toLowerCase().includes(keyword)
+  );
+  renderKaryakarini(filtered);
 }
 
 initLogin();
