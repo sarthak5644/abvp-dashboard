@@ -1,861 +1,147 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>ABVP Western Zone Dashboard</title>
-
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f5f6fa;
-  }
-
-  .sidebar {
-    width: 230px;
-    height: 100vh;
-    background: #1e293b;
-    color: white;
-    position: fixed;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-
-  .sidebar h2 {
-    font-size: 20px;
-    margin-bottom: 10px;
-  }
-
-  .sidebar .userbox {
-    font-size: 12px;
-    color: #94a3b8;
-    margin-bottom: 20px;
-    line-height: 1.5;
-  }
-
-  .sidebar .userbox a {
-    color: #60a5fa;
-    cursor: pointer;
-  }
-
-  .sidebar a.nav {
-    display: block;
-    color: white;
-    text-decoration: none;
-    margin: 12px 0;
-    padding: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  .sidebar a.nav:hover {
-    background: #334155;
-  }
-
-  .main {
-    margin-left: 270px;
-    padding: 25px;
-  }
-
-  .cards {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 25px;
-    flex-wrap: wrap;
-  }
-
-  .card {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 220px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-
-  .card h3 {
-    margin: 0;
-    color: #475569;
-    font-size: 15px;
-  }
-
-  .card p {
-    font-size: 30px;
-    margin: 10px 0 0;
-    font-weight: bold;
-  }
-
-  table {
-    width: 100%;
-    background: white;
-    border-collapse: collapse;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 15px;
-  }
-
-  th, td {
-    padding: 12px;
-    border-bottom: 1px solid #e5e7eb;
-    text-align: left;
-    font-size: 14px;
-  }
-
-  th {
-    background: #e2e8f0;
-  }
-
-  input, select {
-    padding: 10px;
-    margin: 6px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-  }
-
-  button {
-    padding: 10px 16px;
-    background: #2563eb;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  button:hover {
-    background: #1d4ed8;
-  }
-
-  .section {
-    display: none;
-  }
-
-  .section.active {
-    display: block;
-  }
-
-  .form-box {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-  }
-
-  #loginOverlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15,23,42,0.92);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-  }
-
-  #loginBox {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    width: 340px;
-    text-align: center;
-  }
-
-  #loginBox h2 {
-    margin-top: 0;
-  }
-
-  #loginBox input {
-    width: 100%;
-    box-sizing: border-box;
-    margin: 8px 0;
-  }
-
-  #loginBox button {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  #loginError {
-    color: red;
-    font-size: 13px;
-    margin-top: 10px;
-  }
-
-  #loadingMsg {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background: #facc15;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-size: 13px;
-    display: none;
-    z-index: 1000;
-  }
-
-  .role-badge {
-    display: inline-block;
-    background: #334155;
-    color: white;
-    padding: 3px 8px;
-    border-radius: 20px;
-    font-size: 11px;
-    margin-top: 4px;
-  }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <div id="loadingMsg">Loading...</div>
 
-<!-- LOGIN OVERLAY -->
 <div id="loginOverlay">
   <div id="loginBox">
-    <h2>ABVP Western Zone</h2>
-    <p style="font-size:13px;color:#64748b;">
-      Enter your authorised email to access dashboard.
-    </p>
-
+    <h2>🚩 ABVP Western Zone</h2>
+    <p>Enter your authorised email to access dashboard.</p>
     <input id="loginName" placeholder="Your Name">
     <input id="loginEmail" placeholder="Your Email">
-
     <button onclick="doLogin()">Continue</button>
-
     <div id="loginError"></div>
   </div>
 </div>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
   <h2>ABVP Western Zone</h2>
+  <div class="tagline">छात्रशक्ति — राष्ट्रशक्ति</div>
 
   <div class="userbox">
     Logged in as:<br>
     <span id="currentUserLabel">-</span><br>
-    <span id="currentUserRole" class="role-badge">-</span><br><br>
+    <span id="currentUserRole" class="role-badge">-</span>
+    <br><br>
     <a onclick="logout()">Switch user</a>
   </div>
 
-  <a class="nav" onclick="showSection('dashboard')">Dashboard</a>
-  <a class="nav" onclick="showSection('membership')">Membership</a>
-  <a class="nav" onclick="showSection('pravas')">Pravas</a>
-  <a class="nav" onclick="showSection('forms')">Active Forms</a>
-  <a class="nav" onclick="showSection('logs')">Logs</a>
+  <a id="navlink-dashboard" class="nav active-link" onclick="showSection('dashboard')">📊 Dashboard</a>
+  <a id="navlink-membership" class="nav" onclick="showSection('membership')">👥 Membership</a>
+  <a id="navlink-pravas" class="nav" onclick="showSection('pravas')">🧳 Pravas</a>
+  <a id="navlink-forms" class="nav" onclick="showSection('forms')">📝 Active Forms</a>
+  <a id="navlink-logs" class="nav" onclick="showSection('logs')">🗂️ Logs</a>
 </div>
 
-<!-- MAIN CONTENT -->
 <div class="main">
 
-  <!-- DASHBOARD -->
+  <div id="occasionBanner" class="occasion-banner"></div>
+
   <div id="dashboard" class="section active">
     <h1>ABVP Western Zone Dashboard</h1>
 
     <div class="cards">
-      <div class="card">
-        <h3>Total Membership</h3>
-        <p id="totalMembership">0</p>
-      </div>
-
-      <div class="card">
-        <h3>Total Prants</h3>
-        <p id="totalPrants">5</p>
-      </div>
-
-      <div class="card">
-        <h3>Active Forms</h3>
-        <p id="activeFormsCount">0</p>
-      </div>
-
-      <div class="card">
-        <h3>Pravas Records</h3>
-        <p id="pravasCount">0</p>
-      </div>
+      <div class="card"><h3>Total Membership</h3><p id="totalMembership">0</p></div>
+      <div class="card"><h3>Total Prants</h3><p id="totalPrants">5</p></div>
+      <div class="card"><h3>Active Forms</h3><p id="activeFormsCount">0</p></div>
+      <div class="card"><h3>Pravas Records</h3><p id="pravasCount">0</p></div>
     </div>
 
     <h2>Prant-wise Membership</h2>
-
     <table>
-      <thead>
-        <tr>
-          <th>Prant</th>
-          <th>Total</th>
-        </tr>
-      </thead>
+      <thead><tr><th>Prant</th><th>Total</th></tr></thead>
       <tbody id="prantTable"></tbody>
     </table>
   </div>
 
-  <!-- MEMBERSHIP -->
   <div id="membership" class="section">
     <h1>Membership</h1>
-
     <div class="form-box">
-      <h3 style="margin-top:0;">Add Membership Manually</h3>
-
+      <h3>Add Membership Manually</h3>
       <input id="mDate" type="date">
       <input id="mName" placeholder="Full Name">
       <input id="mCollege" placeholder="College">
       <input id="mPhone" placeholder="Phone">
-
       <select id="mPrant">
-        <option>Konkan Prant</option>
-        <option>Pashchim Maharashtra Prant</option>
-        <option>Deogiri Prant</option>
-        <option>Vidharbh Prant</option>
-        <option>Gujrat Prant</option>
+        <option>Konkan Prant</option><option>Pashchim Maharashtra Prant</option>
+        <option>Deogiri Prant</option><option>Vidharbh Prant</option><option>Gujrat Prant</option>
       </select>
-
       <input id="mDistrict" placeholder="District">
       <input id="mMembershipId" placeholder="Membership ID">
-
       <button onclick="saveMembership()">Add Membership</button>
     </div>
-
     <input type="text" id="searchInput" placeholder="Search membership records..." onkeyup="searchTable()">
-
     <table>
-      <thead>
-        <tr id="membershipHead"></tr>
-      </thead>
+      <thead><tr id="membershipHead"></tr></thead>
       <tbody id="membershipBody"></tbody>
     </table>
   </div>
 
-  <!-- PRAVAS -->
   <div id="pravas" class="section">
     <h1>Pravas Tracking</h1>
-
     <div class="form-box">
       <input id="pDate" type="date">
       <input id="pName" placeholder="Person Name">
       <input id="pFrom" placeholder="From Place">
       <input id="pTo" placeholder="To Place">
-
       <select id="pPrant">
-        <option>Konkan Prant</option>
-        <option>Pashchim Maharashtra Prant</option>
-        <option>Deogiri Prant</option>
-        <option>Vidharbh Prant</option>
-        <option>Gujrat Prant</option>
+        <option>Konkan Prant</option><option>Pashchim Maharashtra Prant</option>
+        <option>Deogiri Prant</option><option>Vidharbh Prant</option><option>Gujrat Prant</option>
       </select>
-
       <input id="pDistrict" placeholder="District">
       <input id="pPurpose" placeholder="Purpose">
       <input id="pContact" placeholder="Contact">
-
       <select id="pStatus">
-        <option>Planned</option>
-        <option>Completed</option>
-        <option>Cancelled</option>
+        <option>Planned</option><option>Completed</option><option>Cancelled</option>
       </select>
-
       <button onclick="savePravas()">Add Pravas</button>
     </div>
-
     <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Person</th>
-          <th>From</th>
-          <th>To</th>
-          <th>Prant</th>
-          <th>District</th>
-          <th>Purpose</th>
-          <th>Status</th>
-          <th>Added By</th>
-        </tr>
-      </thead>
+      <thead><tr><th>Date</th><th>Person</th><th>From</th><th>To</th><th>Prant</th><th>District</th><th>Purpose</th><th>Status</th><th>Added By</th></tr></thead>
       <tbody id="pravasTable"></tbody>
     </table>
   </div>
 
-  <!-- ACTIVE FORMS -->
   <div id="forms" class="section">
     <h1>Active Google Forms</h1>
-
     <div class="form-box">
       <input id="fName" placeholder="Form Name">
-
       <select id="fPrant">
-        <option>Konkan Prant</option>
-        <option>Pashchim Maharashtra Prant</option>
-        <option>Deogiri Prant</option>
-        <option>Vidharbh Prant</option>
-        <option>Gujrat Prant</option>
+        <option>Konkan Prant</option><option>Pashchim Maharashtra Prant</option>
+        <option>Deogiri Prant</option><option>Vidharbh Prant</option><option>Gujrat Prant</option>
       </select>
-
       <input id="fDistrict" placeholder="District">
       <input id="fDate" type="date">
       <input id="fLink" placeholder="Google Form Link">
-
       <select id="fStatus">
-        <option>Active</option>
-        <option>Upcoming</option>
-        <option>Closed</option>
+        <option>Active</option><option>Upcoming</option><option>Closed</option>
       </select>
-
       <button onclick="saveActiveForm()">Add Form</button>
     </div>
-
     <table>
-      <thead>
-        <tr>
-          <th>Form Name</th>
-          <th>Prant</th>
-          <th>District</th>
-          <th>Event Date</th>
-          <th>Link</th>
-          <th>Status</th>
-          <th>Added By</th>
-        </tr>
-      </thead>
+      <thead><tr><th>Form Name</th><th>Prant</th><th>District</th><th>Event Date</th><th>Link</th><th>Status</th><th>Added By</th></tr></thead>
       <tbody id="formsTable"></tbody>
     </table>
   </div>
 
-  <!-- LOGS -->
   <div id="logs" class="section">
     <h1>Activity Logs</h1>
-
     <table>
-      <thead>
-        <tr>
-          <th>Timestamp</th>
-          <th>Action</th>
-          <th>User</th>
-          <th>Details</th>
-        </tr>
-      </thead>
+      <thead><tr><th>Timestamp</th><th>Action</th><th>User</th><th>Details</th></tr></thead>
       <tbody id="logsTable"></tbody>
     </table>
   </div>
 
 </div>
 
-<script>
-/*
-  IMPORTANT:
-  Paste your latest Google Apps Script /exec URL below.
-*/
-const API_URL = "https://script.google.com/macros/s/AKfycbyHYD32ErIjfodsi94cFSuYyIDBviRtEmCA1dXdItvLOIj-gGzsIpAp7Cm32avxmEha/exec";
-
-let dashboardData = {};
-let membershipData = [];
-let currentUser = null;
-
-function showLoading(v) {
-  document.getElementById("loadingMsg").style.display = v ? "block" : "none";
-}
-
-/* -------------------------------------------------
-   JSONP API REQUEST
-------------------------------------------------- */
-
-function apiCall(action, payload = {}) {
-  showLoading(true);
-
-  return new Promise((resolve, reject) => {
-    google.script.run
-      .withSuccessHandler(function(res) {
-        showLoading(false);
-        if (res && res.error) reject(new Error(res.error));
-        else resolve(res);
-      })
-      .withFailureHandler(function(err) {
-        showLoading(false);
-        reject(new Error(err.message || err));
-      })
-      .handleActionForWebApp(action, payload);
-  });
-}
-
-function apiCall(action, payload = {}) {
-  showLoading(true);
-
-  return new Promise((resolve, reject) => {
-    google.script.run
-      .withSuccessHandler(function(res) {
-        showLoading(false);
-        if (res && res.error) reject(new Error(res.error));
-        else resolve(res);
-      })
-      .withFailureHandler(function(err) {
-        showLoading(false);
-        reject(new Error(err.message || err));
-      })
-      .handleActionForWebApp(action, payload);
-  });
-}
-
-async function apiGet(action, payload = {}) {
-  return apiCall(action, payload);
-}
-
-async function apiPost(action, payload = {}) {
-  return apiCall(action, payload);
-}
-
-
-async function apiGet(action, payload = {}) {
-  return apiCall(action, payload);
-}
-
-async function apiPost(action, payload = {}) {
-  return ap(action, payload);
-}
-
-/* -------------------------------------------------
-   LOGIN WITH AUTHORISEPERSONS CHECK
-------------------------------------------------- */
-
-function initLogin() {
-  let saved = null;
-
-  try {
-    saved = localStorage.getItem("abvp_user");
-  } catch (e) {}
-
-  if (saved) {
-    currentUser = JSON.parse(saved);
-
-    document.getElementById("loginOverlay").style.display = "none";
-    document.getElementById("currentUserLabel").innerText =
-      currentUser.name + " (" + currentUser.email + ")";
-    document.getElementById("currentUserRole").innerText =
-      currentUser.role || "User";
-
-    loadDashboard();
-  } else {
-    document.getElementById("loginOverlay").style.display = "flex";
-  }
-}
-
-async function doLogin() {
-  const name = document.getElementById("loginName").value.trim();
-  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
-  const errorBox = document.getElementById("loginError");
-
-  errorBox.innerText = "";
-
-  if (!name || !email) {
-    errorBox.innerText = "Please enter both name and email.";
-    return;
-  }
-
-  try {
-    const res = await apiGet("checkAccess", { email });
-
-    if (!res.allowed) {
-      errorBox.innerText = res.message || "You are not authorised to access this dashboard.";
-      return;
-    }
-
-    currentUser = {
-      name: res.user.Name || name,
-      email: res.user.Email || email,
-      role: res.user.Role || "User",
-      prant: res.user.Prant || ""
-    };
-
-    localStorage.setItem("abvp_user", JSON.stringify(currentUser));
-
-    document.getElementById("loginOverlay").style.display = "none";
-    document.getElementById("currentUserLabel").innerText =
-      currentUser.name + " (" + currentUser.email + ")";
-    document.getElementById("currentUserRole").innerText =
-      currentUser.role;
-
-    loadDashboard();
-
-  } catch (err) {
-    errorBox.innerText = "Login failed: " + err.message;
-  }
-}
-
-function logout() {
-  try {
-    localStorage.removeItem("abvp_user");
-  } catch (e) {}
-
-  currentUser = null;
-
-  document.getElementById("loginName").value = "";
-  document.getElementById("loginEmail").value = "";
-  document.getElementById("loginError").innerText = "";
-  document.getElementById("loginOverlay").style.display = "flex";
-}
-
-function getAddedByLabel() {
-  if (!currentUser) return "Unknown";
-  return currentUser.name + " (" + currentUser.email + ")";
-}
-
-/* -------------------------------------------------
-   NAVIGATION
-------------------------------------------------- */
-
-function showSection(id) {
-  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
-
-/* -------------------------------------------------
-   LOAD DASHBOARD
-------------------------------------------------- */
-
-async function loadDashboard() {
-  try {
-    const stats = await apiGet("getDashboardStats");
-
-    dashboardData = stats;
-    membershipData = stats.latestRecords || [];
-
-    document.getElementById("totalMembership").innerText = stats.totalMembership || 0;
-    document.getElementById("totalPrants").innerText = stats.totalPrants || 5;
-    document.getElementById("activeFormsCount").innerText = stats.activeForms ? stats.activeForms.length : 0;
-    document.getElementById("pravasCount").innerText = stats.pravas ? stats.pravas.length : 0;
-
-    renderPrantTable(stats.prantCount || {});
-    renderMembershipTable(membershipData);
-    renderPravas(stats.pravas || []);
-    renderForms(stats.activeForms || []);
-    renderLogs(stats.logs || []);
-
-  } catch (err) {
-    alert("Failed to load dashboard: " + err.message);
-    console.error(err);
-  }
-}
-
-/* -------------------------------------------------
-   RENDER FUNCTIONS
-------------------------------------------------- */
-
-function renderPrantTable(data) {
-  let html = "";
-
-  Object.keys(data).forEach(p => {
-    html += `<tr>
-      <td>${escapeHtml(p)}</td>
-      <td>${escapeHtml(data[p])}</td>
-    </tr>`;
-  });
-
-  document.getElementById("prantTable").innerHTML = html;
-}
-
-function renderMembershipTable(data) {
-  const head = document.getElementById("membershipHead");
-  const body = document.getElementById("membershipBody");
-
-  head.innerHTML = "";
-  body.innerHTML = "";
-
-  if (!data.length) return;
-
-  const headers = Object.keys(data[0]);
-
-  headers.forEach(h => {
-    head.innerHTML += `<th>${escapeHtml(h)}</th>`;
-  });
-
-  data.forEach(row => {
-    let tr = "<tr>";
-
-    headers.forEach(h => {
-      tr += `<td>${escapeHtml(row[h] || "")}</td>`;
-    });
-
-    tr += "</tr>";
-    body.innerHTML += tr;
-  });
-}
-
-function searchTable() {
-  const keyword = document.getElementById("searchInput").value.toLowerCase();
-
-  const filtered = membershipData.filter(row =>
-    Object.values(row).join(" ").toLowerCase().includes(keyword)
-  );
-
-  renderMembershipTable(filtered);
-}
-
-function renderPravas(data) {
-  let html = "";
-
-  data.forEach(r => {
-    html += `<tr>
-      <td>${escapeHtml(r.Date || "")}</td>
-      <td>${escapeHtml(r["Person Name"] || "")}</td>
-      <td>${escapeHtml(r["From Place"] || "")}</td>
-      <td>${escapeHtml(r["To Place"] || "")}</td>
-      <td>${escapeHtml(r.Prant || "")}</td>
-      <td>${escapeHtml(r.District || "")}</td>
-      <td>${escapeHtml(r.Purpose || "")}</td>
-      <td>${escapeHtml(r.Status || "")}</td>
-      <td>${escapeHtml(r["Added By"] || "")}</td>
-    </tr>`;
-  });
-
-  document.getElementById("pravasTable").innerHTML = html;
-}
-
-function renderForms(data) {
-  let html = "";
-
-  data.forEach(r => {
-    const link = r["Form Link"] || "#";
-
-    html += `<tr>
-      <td>${escapeHtml(r["Form Name"] || "")}</td>
-      <td>${escapeHtml(r.Prant || "")}</td>
-      <td>${escapeHtml(r.District || "")}</td>
-      <td>${escapeHtml(r["Event Date"] || "")}</td>
-      <td><a href="${escapeAttr(link)}" target="_blank">Open Form</a></td>
-      <td>${escapeHtml(r.Status || "")}</td>
-      <td>${escapeHtml(r["Added By"] || "")}</td>
-    </tr>`;
-  });
-
-  document.getElementById("formsTable").innerHTML = html;
-}
-
-function renderLogs(data) {
-  let html = "";
-
-  data.forEach(r => {
-    html += `<tr>
-      <td>${escapeHtml(r.Timestamp || "")}</td>
-      <td>${escapeHtml(r.Action || "")}</td>
-      <td>${escapeHtml(r.User || "")}</td>
-      <td>${escapeHtml(r.Details || "")}</td>
-    </tr>`;
-  });
-
-  document.getElementById("logsTable").innerHTML = html;
-}
-
-/* -------------------------------------------------
-   SAVE FUNCTIONS
-------------------------------------------------- */
-
-async function savePravas() {
-  if (!currentUser) {
-    alert("Please login first.");
-    return;
-  }
-
-  const data = {
-    date: document.getElementById("pDate").value,
-    personName: document.getElementById("pName").value,
-    fromPlace: document.getElementById("pFrom").value,
-    toPlace: document.getElementById("pTo").value,
-    prant: document.getElementById("pPrant").value,
-    district: document.getElementById("pDistrict").value,
-    purpose: document.getElementById("pPurpose").value,
-    contact: document.getElementById("pContact").value,
-    status: document.getElementById("pStatus").value,
-    addedBy: getAddedByLabel()
-  };
-
-  try {
-    const res = await apiPost("addPravas", data);
-    alert(res.message || "Pravas added successfully");
-
-    ["pDate", "pName", "pFrom", "pTo", "pDistrict", "pPurpose", "pContact"]
-      .forEach(id => document.getElementById(id).value = "");
-
-    loadDashboard();
-
-  } catch (err) {
-    alert("ERROR: " + err.message);
-  }
-}
-
-async function saveActiveForm() {
-  if (!currentUser) {
-    alert("Please login first.");
-    return;
-  }
-
-  const data = {
-    formName: document.getElementById("fName").value,
-    prant: document.getElementById("fPrant").value,
-    district: document.getElementById("fDistrict").value,
-    eventDate: document.getElementById("fDate").value,
-    formLink: document.getElementById("fLink").value,
-    status: document.getElementById("fStatus").value,
-    addedBy: getAddedByLabel()
-  };
-
-  try {
-    const res = await apiPost("addActiveForm", data);
-    alert(res.message || "Form added successfully");
-
-    ["fName", "fDistrict", "fDate", "fLink"]
-      .forEach(id => document.getElementById(id).value = "");
-
-    loadDashboard();
-
-  } catch (err) {
-    alert("ERROR: " + err.message);
-  }
-}
-
-async function saveMembership() {
-  if (!currentUser) {
-    alert("Please login first.");
-    return;
-  }
-
-  const data = {
-    date: document.getElementById("mDate").value,
-    name: document.getElementById("mName").value,
-    college: document.getElementById("mCollege").value,
-    phone: document.getElementById("mPhone").value,
-    prant: document.getElementById("mPrant").value,
-    district: document.getElementById("mDistrict").value,
-    membershipId: document.getElementById("mMembershipId").value,
-    addedBy: getAddedByLabel()
-  };
-
-  try {
-    const res = await apiPost("addMembership", data);
-    alert(res.message || "Membership added successfully");
-
-    ["mDate", "mName", "mCollege", "mPhone", "mDistrict", "mMembershipId"]
-      .forEach(id => document.getElementById(id).value = "");
-
-    loadDashboard();
-
-  } catch (err) {
-    alert("ERROR: " + err.message);
-  }
-}
-
-/* -------------------------------------------------
-   SECURITY HELPERS
-------------------------------------------------- */
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function escapeAttr(value) {
-  return String(value).replaceAll('"', "&quot;");
-}
-
-/* -------------------------------------------------
-   START
-------------------------------------------------- */
-
-initLogin();
-</script>
-
+<script src="special-days.js"></script>
+<script src="api.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
